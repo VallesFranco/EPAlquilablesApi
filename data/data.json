@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "descripcion": "Castillo inflable",
+        "disponible": true,
+        "precio": 35000
+    },
+    {
+        "id": 2,
+        "descripcion": "Metegol",
+        "disponible": true,
+        "precio": 5000
+    },
+    {
+        "id": 3,
+        "descripcion": "Pool",
+        "disponible": true,
+        "precio": 25000
+    },
+    {
+        "id": 4,
+        "descripcion": "Table tennis",
+        "disponible": false,
+        "precio": 15000
+    }
+]
