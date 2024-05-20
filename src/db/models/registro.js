@@ -9,12 +9,15 @@ module.exports = (sequelize, DataTypes) => {
         as: 'Alquilable',
         foreignKey: 'rentable_id'
       })
+      Registro.belongsTo(models.Cliente, {
+        as: 'cliente',
+        foreignKey: 'cliente_id'
+      })
     }
   }
   Registro.init({
     fecha: DataTypes.DATEONLY,
-    abono: DataTypes.BOOLEAN,
-    id_cliente: DataTypes.NUMBER
+    abono: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Registro',

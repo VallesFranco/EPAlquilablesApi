@@ -1,20 +1,14 @@
-const express = require('express')
-const data = require('../data/data.json')
-const db = require('./db/models')
-const clienteRoute = require('./routes/cliente.route')
-const alquilableRoute = require('./routes/alquilable.route')
+const {Router} = require('express')
+const db = require('../db/models')
 
-const app = express();
-app.use(express.json())
-app.use(clienteRoute)
-app.use(alquilableRoute)
+const route = Router();
 
-app.get('/alquilable', async (req, res)=> {
+route.get('/alquilable', async (req, res)=> {
     const alquilables = await db.Alquilable.findAll({})
     res.status(200).json(alquilables)
 })
 
-app.get('/alquilable/:id', async (req, res)=> {
+route.get('/alquilable/:id', async (req, res)=> {
     const idAlquilable = req.params.id;
     const alquilable = await db.Alquilable.findOne({
         where: {id: idAlquilable},
@@ -32,9 +26,9 @@ app.get('/alquilable/:id', async (req, res)=> {
         ]
     })
     res.status(200).json(alquilable)
-}) 
+})
 
-app.delete('/alquilable/:id', async (req, res)=> {
+route.delete('/alquilable/:id', async (req, res)=> {
     const id = req.params.id;
     const row = await db.Alquilable.destroy({where:{id}})
     if(row) {
@@ -44,7 +38,7 @@ app.delete('/alquilable/:id', async (req, res)=> {
     }
 })
 
-app.delete('/alquilable/:idAlquilable/registro/:idRegistro', async (req, res)=> {
+route.delete('/alquilable/:idAlquilable/registro/:idRegistro', async (req, res)=> {
     const idAlquilable = req.params.idAlquilable;
     const idRegistro = req.params.idRegistro;
     const row = await db.Registro.destroy({where:{id: idRegistro, rentable_id: idAlquilable}})
@@ -55,7 +49,7 @@ app.delete('/alquilable/:idAlquilable/registro/:idRegistro', async (req, res)=> 
     }
 })
 
-app.delete('/registro/:id', async (req, res)=>{
+route.delete('/registro/:id', async (req, res)=>{
     const id = req.params.id;
     const row = await db.Registro.destroy({where:{id}})
     if(row) {
@@ -65,7 +59,7 @@ app.delete('/registro/:id', async (req, res)=>{
     }
 })
 
-app.post('/alquilable', async (req, res)=> {
+route.post('/alquilable', async (req, res)=> {
     try {
         const alquilable = req.body
         const newRecord = await db.Alquilable.create(alquilable)
@@ -75,7 +69,7 @@ app.post('/alquilable', async (req, res)=> {
     }
 })
 
-app.post('/alquilable/:id/registro', async (req, res)=> {
+route.post('/alquilable/:id/registro', async (req, res)=> {
     const idAlquilable = req.params.id;
     const alquilable = await db.Alquilable.findByPk(idAlquilable)
     if(alquilable) {
@@ -87,7 +81,7 @@ app.post('/alquilable/:id/registro', async (req, res)=> {
     }
 })
 
-app.put('/alquilable/:id', (req, res)=> {
+route.put('/alquilable/:id', (req, res)=> {
     const id = req.params.id;
     const idx = data.findIndex(e => e.id == id)
     if (idx >= 0) {
@@ -97,44 +91,4 @@ app.put('/alquilable/:id', (req, res)=> {
         res.status(404).json({error: `El ID ${id} no existe.`})
 })
 
-app.listen(3000, async ()=> {
-    console.log(`La app arrancó correctamente en el puerto 3000.`);
-    try {
-        await db.sequelize.authenticate()
-        await db.sequelize.sync({force:true});
-
-        const cliente = await db.Cliente.create({
-            nombre: "Samuel Diaz",
-            fechaNacimiento: new Date ('2000-02-05')
-        })
-        db.Alquilable.create({
-            descripcion: "Castillo inflable",
-            disponible: true,
-            precio: 1200,
-            registros: [
-                {
-                    fecha: new Date('2024-01-05'),
-                    abono: true,
-                    cliente
-                },
-                {
-                    fecha: new Date('2024-03-15'),
-                    abono: false,
-                    cliente
-                },
-                {
-                    fecha: new Date('2024-03-17'),
-                    abono: false,
-                    cliente
-                }
-            ] 
-        }, {include:['registros']})
-        db.Alquilable.create({
-            descripcion: "Toro mecanico",
-            disponible: true,
-            precio: 1400
-        })
-    } catch(err) {
-        console.log(err)
-    }
-})
+module.exports = route
