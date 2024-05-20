@@ -1,5 +1,6 @@
 const {Router} = require('express')
 const db = require('../db/models')
+const middlewareAlquilable = require('../middlewares/existe.middleware')
 
 const route = Router();
 
@@ -8,7 +9,7 @@ route.get('/alquilable', async (req, res)=> {
     res.status(200).json(alquilables)
 })
 
-route.get('/alquilable/:id', async (req, res)=> {
+route.get('/alquilable/:id', middlewareAlquilable.existeById(db.Alquilable), async (req, res)=> {
     const idAlquilable = req.params.id;
     const alquilable = await db.Alquilable.findOne({
         where: {id: idAlquilable},
